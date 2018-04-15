@@ -47,18 +47,12 @@ func SemiGradientSarsa(state State, valueOf Valuefunction, GetAction ActionFunct
 	currentAction := GetAction(state, valueFunction)
 
 	steps := 0
-	for steps < 100 && !currentState.InGoalState() {
+	for !currentState.InGoalState() {
 
 		steps += 1
-		//c := exec.Command("clear")
-		//c.Stdout = os.Stdout
-		//c.Run()
-		//fmt.Println("Action: ", currentAction)
 		newState, reward := currentState.TakeAction(currentAction)
 		newAction := GetAction(newState, valueFunction)
 		target := valueOf(newState, newAction, valueFunction) + reward
-		//fmt.Println("Reward: ", reward)
-		//fmt.Println("Value: ", target-reward)
 		learn(currentState, currentAction, target, valueFunction)
 		currentState = newState
 		currentAction = newAction
@@ -82,10 +76,9 @@ func learn(state State, action string, target float64, vf *ValueFunction) {
 
 	for idx := 0; idx < len(delta); idx++ {
 		delta[idx] = /*vf.Alpha **/ 0.0001 * (target - estimations[idx])
-		//fmt.Println("Target: ", target, " con estimacion: ", estimations[idx])
+
 	}
 
-	//fmt.Println("Deltas: ", delta)
 	for feature := range delta {
 		for tile := range activeTiles[feature] {
 			vf.Weights[activeTiles[feature][tile]] += delta[feature]
